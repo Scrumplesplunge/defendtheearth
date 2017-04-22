@@ -1,3 +1,16 @@
+var MouseButtons = {
+  left: 1,
+  right: 2,
+};
+
+var Keys = {
+  W: 87,
+  A: 65,
+  S: 83,
+  D: 68,
+  SPACE: 32,
+};
+
 // Return a random value in the range [a, b).
 function random(a, b) { return a + Math.random() * (b - a); }
 

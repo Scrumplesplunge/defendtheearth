@@ -1,11 +1,3 @@
-var Keys = {
-  W: 87,
-  A: 65,
-  S: 83,
-  D: 68,
-  SPACE: 32,
-};
-
 var leftGunOffset = new Vector(8, -2.5);
 var rightGunOffset = new Vector(8, 2.5);
 var leftEngineOffset = new Vector(-6, -2.5);
@@ -48,16 +40,21 @@ class Ship extends PhysicsObject {
 
   update(dt) {
     // Handle movement controls.
-    this.applyForce(this.forward().mul(Config.ENGINE_FORCE * this.thrust));
-    var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
-    var target = Config.ROTATE_SPEED * this.turn;
-    this.angularVelocity = damping * this.angularVelocity + target;
+    this.applyImpulse(
+        this.forward().mul(Config.SHIP_FORCE * this.thrust * dt));
+
+    // Comment/uncomment this part to have rotation controls be acceleration.
+    this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
+
+    // Comment/uncomment this part to have rotation controls be velocity.
+    // var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
+    // var target = Config.ROTATE_SPEED * this.turn;
+    // this.angularVelocity = damping * this.angularVelocity + target;
 
     // Handle gunfire.
     if (this.firing) {
       this.bulletDelay -= dt;
       if (this.bulletDelay <= 0) {
-        console.log("pew");
         var leftGun = this.fromLocal(leftGunOffset);
         var rightGun = this.fromLocal(rightGunOffset);
         Bullet.fire(this, rightGun, this.forward(), Config.BULLET_SPRAY);

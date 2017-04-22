@@ -58,8 +58,8 @@ class PhysicsObject extends EventManager {
 
   remove() { if (this.universe != null) this.universe.remove(this); }
 
-  applyForce(v) { this.velocity = this.velocity.add(v.div(this.mass)); }
-  applyTorque(t) { this.angularVelocity += t / this.inertia; }
+  applyImpulse(v) { this.velocity = this.velocity.add(v.div(this.mass)); }
+  applyAngularImpulse(s) { this.angularVelocity += s / this.inertia; }
 
   forward() { return Vector.fromAngle(this.angle); }
 
@@ -116,9 +116,9 @@ class Universe {
         // Apply gravity.
         var offset = b.position.sub(a.position);
         var gravity = Config.GRAVITY * a.mass * b.mass / offset.dot(offset);
-        var force = offset.norm().mul(gravity);
-        a.applyForce(force);
-        b.applyForce(force.neg());
+        var force = Universe.gravity(a, b);
+        a.applyImpulse(force.mul(dt));
+        b.applyImpulse(force.mul(-dt));
 
         // Check for collisions.
         var centerDistance = offset.len();
@@ -150,5 +150,11 @@ class Universe {
         }
       }
     }
+  }
+
+  static gravity(a, b) {
+    var offset = b.position.sub(a.position);
+    var gravity = Config.GRAVITY * a.mass * b.mass / offset.dot(offset);
+    return offset.norm().mul(gravity);
   }
 }

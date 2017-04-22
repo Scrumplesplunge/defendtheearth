@@ -29,7 +29,7 @@ class Bullet extends PhysicsObject {
     }
 
     // Conserve momentum against the firer.
-    owner.applyForce(velocity.mul(-bullet.mass));
+    owner.applyImpulse(velocity.mul(-bullet.mass));
   }
 
   update(dt) {
