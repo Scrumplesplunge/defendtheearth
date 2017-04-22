@@ -7,7 +7,7 @@ var context;
 var universe = new Universe();
 var earth = new PhysicsObject(images.earth, new Vector(300, 300), 100, 1000);
 universe.add(earth);
-var ship = new PhysicsObject(images.ship, new Vector(450, 300), 10, 1);
+var ship = new PhysicsObject(images.ship, new Vector(450, 300), 10, 10);
 universe.add(ship);
 
 var bullets = [];
@@ -29,8 +29,7 @@ function addBullets() {
       images.bullet, ship.fromLocal(new Vector(-3, -8)), 2, 1);
   var rightBullet = new PhysicsObject(
       images.bullet, ship.fromLocal(new Vector(3, -8)), 2, 1);
-  leftBullet.velocity.y = -500;
-  rightBullet.velocity.y = -500;
+  leftBullet.velocity = rightBullet.velocity = ship.forward().mul(500);
 
   addBullet(leftBullet);
   addBullet(rightBullet);
@@ -53,6 +52,9 @@ function draw() {
 // Update the state of the world.
 var tick = 0;
 function update() {
+  // For the sake of demonstration, rotate the ship.
+  ship.angle = (ship.angle + 0.05) % (2 * Math.PI);
+
   universe.update(UPDATE_DELTA);
   if (++tick % 3 == 0) addBullets();
   draw(context);

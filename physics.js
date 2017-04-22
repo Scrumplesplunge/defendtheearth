@@ -4,12 +4,17 @@ class Vector {
     this.y = y;
   }
 
+  static fromAngle(theta) {
+    return new Vector(Math.cos(theta), Math.sin(theta));
+  }
+
   add(v) { return new Vector(this.x + v.x, this.y + v.y); }
   sub(v) { return new Vector(this.x - v.x, this.y - v.y); }
   mul(s) { return new Vector(this.x * s, this.y * s); }
   div(s) { return new Vector(this.x / s, this.y / s); }
   dot(v) { return this.x * v.x + this.y * v.y; }
   len() { return Math.sqrt(this.dot(this)); }
+  norm() { return this.div(this.len()); }
 
   rotate(theta) {
     var c = Math.cos(theta), s = Math.sin(theta);
@@ -46,6 +51,8 @@ class PhysicsObject extends EventManager {
   update(dt) {
     this.position = this.position.add(this.velocity.mul(dt));
   }
+
+  forward() { return Vector.fromAngle(this.angle - Math.PI / 2); }
 
   toLocal(v) { return v.sub(this.position).rotate(-this.angle); }
   fromLocal(v) { return v.rotate(this.angle).add(this.position); }
@@ -92,9 +99,21 @@ class Universe {
           // which each object moves. A heavy object will not move as much as
           // a light object. I'm not trying anything super-fancy for the
           // collision resolution, it just tries to avoid intersections.
-          var movement = direction.mul(contactDistance / centerDistance);
-          a.position.sub(movement.mul(b.mass / (a.mass + b.mass)));
-          b.position.add(movement.mul(a.mass / (a.mass + b.mass)));
+          var movement = direction.mul(contactDistance / centerDistance - 1);
+          var aMove = b.mass / (a.mass + b.mass);
+          var bMove = a.mass / (a.mass + b.mass);
+          a.position = a.position.sub(movement.mul(aMove));
+          b.position = b.position.add(movement.mul(bMove));
+
+          // Next, we want to remove all relative velocity in the direction of
+          // the collision and try to conserve momentum. On the offchance that
+          // we have negative relative velocity (because I did something stupid)
+          // we will just pretend that the relative velocity is 0.
+          var normal = direction.norm();
+          var relativeVelocity =
+              Math.max(0, a.velocity.dot(normal) - b.velocity.dot(normal));
+          a.velocity = a.velocity.sub(normal.mul(relativeVelocity * aMove));
+          b.velocity = b.velocity.add(normal.mul(relativeVelocity * bMove));
         }
       }
     }
