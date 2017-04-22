@@ -1,38 +1,28 @@
-var UPDATE_DELTA = 0.03;
+var UPDATE_DELTA = 0.02;
+
+var controls = {
+  thrust: "w",
+  jet_left: "a",
+  jet_right: "d",
+  jet_back: "s",
+}
 
 var canvas;
 var context;
 
 // Initialize the universe.
 var universe = new Universe();
-var earth = new PhysicsObject(images.earth, new Vector(300, 300), 100, 1000);
+var earth = new PhysicsObject(images.earth, new Vector(300, 300), 50, 1e9);
+earth.angularVelocity = 0.05;
 universe.add(earth);
-var ship = new PhysicsObject(images.ship, new Vector(450, 300), 10, 10);
+var ship = new Ship(new Vector(450, 300), {});
 universe.add(ship);
 
-var bullets = [];
-var MAX_BULLETS = 100;
-var oldest = 0;
-function addBullet(bullet) {
-  universe.add(bullet);
-  if (bullets.length < MAX_BULLETS) {
-    bullets.push(bullet);
-  } else {
-    universe.remove(bullets[oldest]);
-    bullets[oldest] = bullet;
-    oldest = (oldest + 1) % MAX_BULLETS;
-  }
-}
-
 function addBullets() {
-  var leftBullet = new PhysicsObject(
-      images.bullet, ship.fromLocal(new Vector(-3, -8)), 2, 1);
-  var rightBullet = new PhysicsObject(
-      images.bullet, ship.fromLocal(new Vector(3, -8)), 2, 1);
-  leftBullet.velocity = rightBullet.velocity = ship.forward().mul(500);
-
-  addBullet(leftBullet);
-  addBullet(rightBullet);
+  Bullet.fire(ship, ship.fromLocal(new Vector(-3, -8)), ship.forward(),
+              Config.BULLET_SPRAY);
+  Bullet.fire(ship, ship.fromLocal(new Vector(3, -8)), ship.forward(),
+              Config.BULLET_SPRAY);
 }
 
 // When the size of the browser window changes, update the dimensions of the
@@ -50,13 +40,10 @@ function draw() {
 }
 
 // Update the state of the world.
-var tick = 0;
+//var tick = 0;
 function update() {
-  // For the sake of demonstration, rotate the ship.
-  ship.angle = (ship.angle + 0.05) % (2 * Math.PI);
-
   universe.update(UPDATE_DELTA);
-  if (++tick % 3 == 0) addBullets();
+  //if (++tick % 3 == 0) addBullets();
   draw(context);
 }
 
