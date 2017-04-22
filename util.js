@@ -4,11 +4,12 @@ var MouseButtons = {
 };
 
 var Keys = {
-  W: 87,
-  A: 65,
-  S: 83,
-  D: 68,
+  SHIFT: 16,
   SPACE: 32,
+  A: 65,
+  D: 68,
+  S: 83,
+  W: 87,
 };
 
 // Return a random value in the range [a, b).

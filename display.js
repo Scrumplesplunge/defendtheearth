@@ -20,7 +20,8 @@ class Display {
   update(dt) {
     if (this.target == null) return;
     if (this.mouseDown) return;
-    var targetOffset = this.target.position.sub(this.center);
+    var targetPosition = this.target.position.add(this.target.velocity);
+    var targetOffset = targetPosition.sub(this.center);
     var factor = 1 - Math.pow(1 - Config.CAMERA_TRACKING_RATE,
                               Config.UPDATE_DELTA);
     this.center = this.center.add(targetOffset.mul(factor));

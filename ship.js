@@ -9,6 +9,7 @@ class Ship extends PhysicsObject {
     this.thrust = 0;
     this.turn = 0;
     this.firing = false;
+    this.stabilising = false;
     this.bulletDelay = 0;
 
     window.addEventListener("keydown", event => this.handleKeyDown(event));
@@ -43,13 +44,15 @@ class Ship extends PhysicsObject {
     this.applyImpulse(
         this.forward().mul(Config.SHIP_FORCE * this.thrust * dt));
 
-    // Comment/uncomment this part to have rotation controls be acceleration.
-    this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
-
-    // Comment/uncomment this part to have rotation controls be velocity.
-    // var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
-    // var target = Config.ROTATE_SPEED * this.turn;
-    // this.angularVelocity = damping * this.angularVelocity + target;
+    if (this.stabilising) {
+      // Rotation controls will affect angular velocity directly.
+      var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
+      var target = Config.ROTATE_SPEED * this.turn;
+      this.angularVelocity = damping * this.angularVelocity + target;
+    } else {
+      // Rotation controls will affect angular acceleration.
+      this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
+    }
 
     // Handle gunfire.
     if (this.firing) {
@@ -71,6 +74,7 @@ class Ship extends PhysicsObject {
       case Keys.W: this.thrust = 1; break;
       case Keys.A: this.turn = -1; break;
       case Keys.D: this.turn = 1; break;
+      case Keys.SHIFT: this.stabilising = true; break;
       case Keys.SPACE: this.firing = true; break;
     }
   }
@@ -80,6 +84,7 @@ class Ship extends PhysicsObject {
       case Keys.W: this.thrust = 0; break;
       case Keys.A: this.turn = 0; break;
       case Keys.D: this.turn = 0; break;
+      case Keys.SHIFT: this.stabilising = false; break;
       case Keys.SPACE: this.firing = false; break;
     }
   }
