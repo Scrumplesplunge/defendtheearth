@@ -16,7 +16,7 @@ function draw() {
     context.translate(canvas.width / 2, canvas.height / 2);
     var t = Date.now() / 1000;
     context.translate(100 * Math.sin(t), 100 * Math.cos(t));
-    context.fillRect(-25, -25, 50, 50);
+    context.drawImage(images.earth, -25, -25, 50, 50);
   context.restore();
 }
 
