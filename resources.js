@@ -5,5 +5,7 @@ function image(src) {
 }
 
 var images = {
-  earth : image("earth.png"),
+  bullet: image("bullet.png"),
+  earth: image("earth.png"),
+  ship: image("ship.png"),
 };
