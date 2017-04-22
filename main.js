@@ -1,5 +1,40 @@
+var UPDATE_DELTA = 0.03;
+
 var canvas;
 var context;
+
+// Initialize the universe.
+var universe = new Universe();
+var earth = new PhysicsObject(images.earth, new Vector(300, 300), 100, 1000);
+universe.add(earth);
+var ship = new PhysicsObject(images.ship, new Vector(450, 300), 10, 1);
+universe.add(ship);
+
+var bullets = [];
+var MAX_BULLETS = 100;
+var oldest = 0;
+function addBullet(bullet) {
+  universe.add(bullet);
+  if (bullets.length < MAX_BULLETS) {
+    bullets.push(bullet);
+  } else {
+    universe.remove(bullets[oldest]);
+    bullets[oldest] = bullet;
+    oldest = (oldest + 1) % MAX_BULLETS;
+  }
+}
+
+function addBullets() {
+  var leftBullet = new PhysicsObject(
+      images.bullet, ship.fromLocal(new Vector(-3, -8)), 2, 1);
+  var rightBullet = new PhysicsObject(
+      images.bullet, ship.fromLocal(new Vector(3, -8)), 2, 1);
+  leftBullet.velocity.y = -500;
+  rightBullet.velocity.y = -500;
+
+  addBullet(leftBullet);
+  addBullet(rightBullet);
+}
 
 // When the size of the browser window changes, update the dimensions of the
 // canvas.
@@ -11,19 +46,15 @@ function resizeCanvas() {
 
 // Redraw the state of the world without modifying anything.
 function draw() {
-  context.save();
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.translate(canvas.width / 2, canvas.height / 2);
-    var t = Date.now() / 1000;
-    context.translate(100 * Math.sin(t), 100 * Math.cos(t));
-    context.drawImage(images.earth, -25, -25, 50, 50);
-  context.restore();
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  universe.draw(context);
 }
 
 // Update the state of the world.
 var tick = 0;
 function update() {
-  tick++;
+  universe.update(UPDATE_DELTA);
+  if (++tick % 3 == 0) addBullets();
   draw(context);
 }
 
@@ -32,7 +63,8 @@ function main() {
   context = canvas.getContext("2d");
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
-  setInterval(update, 30);
+
+  setInterval(update, 1000 * UPDATE_DELTA);
 }
 
 window.addEventListener("load", main);
