@@ -3,7 +3,7 @@ var oldestBullet = 0;
 
 class Bullet extends PhysicsObject {
   constructor(owner, position, velocity) {
-    super(images.bullet, position, 2, 0.3);
+    super(images.bullet, position, 5, 0.3);
     this.owner = owner;
     this.velocity = velocity;
     this.angle = velocity.toAngle();

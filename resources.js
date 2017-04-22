@@ -7,6 +7,7 @@ function image(src) {
 var images = {
   bullet: image("bullet.png"),
   earth: image("earth.png"),
+  enemy: image("enemy.png"),
   flame: image("flame.png"),
   ship: image("ship.png"),
 };

@@ -5,6 +5,7 @@ class Display {
     this.center = new Vector(0, 0);
     this.scale = 1;
     this.target = null;
+    this.mousePosition = new Vector(0, 0);
     this.mouseDown = false;
 
     window.addEventListener("mousedown", event => this.updateMouseDown(event));

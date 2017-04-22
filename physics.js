@@ -152,6 +152,44 @@ class Universe {
     }
   }
 
+  // Returns an object with two fields: the object field contains a reference to
+  // the closest object along the ray, or null if such an object does not exist.
+  // The distance field contains the distance along the ray until the point of
+  // intersection, or Infinity if no intersection occurs.
+  cast(position, direction, filter) {
+    var a = direction.dot(direction);
+    var tClosest = Infinity;
+    var object = null;
+    for (var i = 0, n = this.objects.length; i < n; i++) {
+      var circle = this.objects[i];
+
+      // Skip objects that have been removed, or ones that do not pass the
+      // filter.
+      if (circle.universe != this) continue;
+      if (filter && !filter(circle)) continue;
+
+      // This is just some simple vector algebra for finding the intersection
+      // between a circle/sphere and a ray, which leaves us with the problem of
+      // finding the roots to a quadratic equation at^2+bt+c=0.
+      var offset = position.sub(circle.position);
+      var b = 2 * direction.dot(offset);
+      var c = offset.dot(offset) - circle.radius * circle.radius;
+
+      var discriminant = b * b - 4 * a * c;
+      if (discriminant < 0) continue;
+      var root = Math.sqrt(discriminant);
+      var t = (-b - root) / (2 * a);
+      if (0 < t && t < tClosest) {
+        tClosest = t;
+        object = circle;
+      }
+    }
+    return {
+      object: object,
+      distance: direction.len() * tClosest,
+    };
+  }
+
   static gravity(a, b) {
     var offset = b.position.sub(a.position);
     var gravity = Config.GRAVITY * a.mass * b.mass / offset.dot(offset);

@@ -60,9 +60,9 @@ class Ship extends PhysicsObject {
       if (this.bulletDelay <= 0) {
         var leftGun = this.fromLocal(leftGunOffset);
         var rightGun = this.fromLocal(rightGunOffset);
-        Bullet.fire(this, rightGun, this.forward(), Config.BULLET_SPRAY);
-        Bullet.fire(this, leftGun, this.forward(), Config.BULLET_SPRAY);
-        this.bulletDelay += Config.BULLET_DELAY;
+        Bullet.fire(this, rightGun, this.forward(), Config.SHIP_BULLET_SPRAY);
+        Bullet.fire(this, leftGun, this.forward(), Config.SHIP_BULLET_SPRAY);
+        this.bulletDelay += 1 / Config.SHIP_FIRING_RATE;
       }
     }
 
