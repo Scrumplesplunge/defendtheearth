@@ -61,7 +61,7 @@ class PhysicsObject extends EventManager {
   applyForce(v) { this.velocity = this.velocity.add(v.div(this.mass)); }
   applyTorque(t) { this.angularVelocity += t / this.inertia; }
 
-  forward() { return Vector.fromAngle(this.angle - Math.PI / 2); }
+  forward() { return Vector.fromAngle(this.angle); }
 
   toLocal(v) { return v.sub(this.position).rotate(-this.angle); }
   fromLocal(v) { return v.rotate(this.angle).add(this.position); }

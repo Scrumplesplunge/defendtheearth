@@ -6,8 +6,10 @@ var Keys = {
   SPACE: 32,
 };
 
-var leftGunOffset = new Vector(-3, -8);
-var rightGunOffset = new Vector(3, -8);
+var leftGunOffset = new Vector(8, -2.5);
+var rightGunOffset = new Vector(8, 2.5);
+var leftEngineOffset = new Vector(-6, -2.5);
+var rightEngineOffset = new Vector(-6, 2.5);
 
 class Ship extends PhysicsObject {
   constructor(position) {
@@ -27,23 +29,19 @@ class Ship extends PhysicsObject {
       var size = random(8, 12);
 
       // Draw the left thruster.
-      var angle = this.angle + random(-0.1, 0.1);
-      var position = this.fromLocal(new Vector(-2, 10));
       ctx.save();
-        ctx.translate(this.position.x, this.position.y);
-        ctx.rotate(this.angle);
-        ctx.translate(-2, 6);
-        ctx.drawImage(images.flame, -0.5 * size, 0, size, size);
+        var position = this.fromLocal(leftEngineOffset);
+        ctx.translate(position.x, position.y);
+        ctx.rotate(this.angle + random(-0.1, 0.1));
+        ctx.drawImage(images.flame, -size, -0.5 * size, size, size);
       ctx.restore();
 
       // Draw the right thruster.
-      var angle = this.angle + random(-0.1, 0.1);
-      var position = this.fromLocal(new Vector(2, 10));
       ctx.save();
-        ctx.translate(this.position.x, this.position.y);
-        ctx.rotate(this.angle);
-        ctx.translate(2, 6);
-        ctx.drawImage(images.flame, -0.5 * size, 0, size, size);
+        var position = this.fromLocal(rightEngineOffset);
+        ctx.translate(position.x, position.y);
+        ctx.rotate(this.angle + random(-0.1, 0.1));
+        ctx.drawImage(images.flame, -size, -0.5 * size, size, size);
       ctx.restore();
     }
   }

@@ -8,22 +8,15 @@ var controls = {
 }
 
 var canvas;
-var context;
+var display;
 
 // Initialize the universe.
 var universe = new Universe();
-var earth = new PhysicsObject(images.earth, new Vector(300, 300), 50, 1e9);
+var earth = new PhysicsObject(images.earth, new Vector(0, 0), 50, 1e9);
 earth.angularVelocity = 0.05;
 universe.add(earth);
-var ship = new Ship(new Vector(450, 300), {});
+var ship = new Ship(new Vector(150, 0), {});
 universe.add(ship);
-
-function addBullets() {
-  Bullet.fire(ship, ship.fromLocal(new Vector(-3, -8)), ship.forward(),
-              Config.BULLET_SPRAY);
-  Bullet.fire(ship, ship.fromLocal(new Vector(3, -8)), ship.forward(),
-              Config.BULLET_SPRAY);
-}
 
 // When the size of the browser window changes, update the dimensions of the
 // canvas.
@@ -35,21 +28,20 @@ function resizeCanvas() {
 
 // Redraw the state of the world without modifying anything.
 function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  universe.draw(context);
+  display.clear();
+  display.draw(ctx => universe.draw(ctx));
 }
 
 // Update the state of the world.
-//var tick = 0;
 function update() {
   universe.update(UPDATE_DELTA);
-  //if (++tick % 3 == 0) addBullets();
-  draw(context);
+  draw();
 }
 
 function main() {
   canvas = document.getElementById("screen");
-  context = canvas.getContext("2d");
+  display = new Display(canvas);
+
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
 
