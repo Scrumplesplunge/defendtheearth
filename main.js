@@ -10,10 +10,17 @@ universe.add(earth);
 var ship = new Ship(
     new Vector(Config.EARTH_RADIUS + Config.STARTING_ALTITUDE, 0));
 universe.add(ship);
-var enemy = new Enemy(
-    new Vector(-Config.EARTH_RADIUS - 10 * Config.STARTING_ALTITUDE, 0),
-    new EnemyOptions().setSize(15));
-universe.add(enemy);
+
+// Initialize enemies.
+function addEnemy(config) {
+  var startingDirection = Vector.fromAngle(random(-Math.PI, Math.PI));
+  var startingOffset = startingDirection.mul(Config.ENEMY_STARTING_ALTITUDE);
+  var startingPosition = earth.position.add(startingOffset);
+  var enemy = new Enemy(startingPosition, config);
+  universe.add(enemy);
+}
+for (var i = 0; i < 5; i++)
+  addEnemy(new EnemyOptions().setSize(15));
 
 // Compute the velocity required for the ship to be in a (roughly) circular
 // orbit.
@@ -56,8 +63,6 @@ function draw() {
     info(ctx, earth);
     ctx.translate(0, 1);
     info(ctx, ship);
-    ctx.translate(0, 1);
-    info(ctx, enemy);
   ctx.restore();
   ctx.save();
     ctx.translate(display.canvas.width - 20, 20);

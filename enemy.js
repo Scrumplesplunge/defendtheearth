@@ -59,21 +59,23 @@ class Enemy extends PhysicsObject {
       this.firingAngle = target.position.sub(this.position).toAngle();
     }
 
-    // Intended flight path is always to orbit the Earth.
-    var a = Universe.gravity(earth, this).len() / this.mass;
-    var offset = earth.position.sub(this.position);
-    var targetSpeed = Math.sqrt(offset.len() * a);
-    var orbitVelocity = offset.norm().rotate90().mul(targetSpeed);
+    if (earth.universe != null) {
+      // Intended flight path is always to orbit the Earth.
+      var a = Universe.gravity(earth, this).len() / this.mass;
+      var offset = earth.position.sub(this.position);
+      var targetSpeed = Math.sqrt(offset.len() * a);
+      var orbitVelocity = offset.norm().rotate90().mul(targetSpeed);
 
-    // Try to stay close to the orbit altitude.
-    var approachSpeed = clamp(offset.len() - this.orbitAltitude,
-                              -Config.ENEMY_APPROACH_SPEED,
-                              Config.ENEMY_APPROACH_SPEED);
-    var approachVelocity = offset.norm().mul(approachSpeed);
+      // Try to stay close to the orbit altitude.
+      var approachSpeed = clamp(offset.len() - this.orbitAltitude,
+                                -Config.ENEMY_APPROACH_SPEED,
+                                Config.ENEMY_APPROACH_SPEED);
+      var approachVelocity = offset.norm().mul(approachSpeed);
 
-    var targetVelocity = orbitVelocity.add(approachVelocity);
-    var accel = targetVelocity.sub(this.velocity);
-    this.velocity = this.velocity.add(accel.mul(dt));
+      var targetVelocity = orbitVelocity.add(approachVelocity);
+      var accel = targetVelocity.sub(this.velocity);
+      this.velocity = this.velocity.add(accel.mul(dt));
+    }
 
     this.handleSpooling(dt);
   }
