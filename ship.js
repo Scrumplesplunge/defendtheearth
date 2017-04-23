@@ -3,17 +3,25 @@ var rightGunOffset = new Vector(8, 2.5);
 var leftEngineOffset = new Vector(-6, -2.5);
 var rightEngineOffset = new Vector(-6, 2.5);
 
+var RotationMode = {
+  MOUSE: 0,
+  FREE: 1,
+  STABLE: 2,
+};
+
 class Ship extends PhysicsObject {
   constructor(position) {
     super(images.ship, position, 10, 1e3);
     this.thrust = 0;
     this.turn = 0;
     this.firing = false;
-    this.stabilising = false;
+    this.rotationMode = RotationMode.MOUSE;
     this.bulletDelay = 0;
 
     window.addEventListener("keydown", event => this.handleKeyDown(event));
     window.addEventListener("keyup", event => this.handleKeyUp(event));
+    window.addEventListener("mousedown", event => this.updateMouseState(event));
+    window.addEventListener("mouseup", event => this.updateMouseState(event));
   }
 
   draw(ctx) {
@@ -40,18 +48,28 @@ class Ship extends PhysicsObject {
   }
 
   update(dt) {
+    super.update(dt);
+
     // Handle movement controls.
     this.applyImpulse(
         this.forward().mul(Config.SHIP_FORCE * this.thrust * dt));
 
-    if (this.stabilising) {
-      // Rotation controls will affect angular velocity directly.
-      var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
-      var target = Config.ROTATE_SPEED * this.turn;
-      this.angularVelocity = damping * this.angularVelocity + target;
-    } else {
-      // Rotation controls will affect angular acceleration.
-      this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
+    switch (this.rotationMode) {
+      case RotationMode.MOUSE:
+        // Ship will always face the mouse.
+        var mousePosition = display.fromScreen(display.mousePosition);
+        this.angle = mousePosition.sub(this.position).toAngle();
+        break;
+      case RotationMode.STABLE:
+        // Rotation controls will affect angular velocity directly.
+        var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
+        var target = Config.ROTATE_SPEED * this.turn;
+        this.angularVelocity = damping * this.angularVelocity + target;
+        break;
+      case RotationMode.FREE:
+        // Rotation controls will affect angular acceleration.
+        this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
+        break;
     }
 
     // Handle gunfire.
@@ -65,8 +83,6 @@ class Ship extends PhysicsObject {
         this.bulletDelay += 1 / Config.SHIP_FIRING_RATE;
       }
     }
-
-    super.update(dt);
   }
 
   handleKeyDown(event) {
@@ -74,8 +90,6 @@ class Ship extends PhysicsObject {
       case Keys.W: this.thrust = 1; break;
       case Keys.A: this.turn = -1; break;
       case Keys.D: this.turn = 1; break;
-      case Keys.SHIFT: this.stabilising = true; break;
-      case Keys.SPACE: this.firing = true; break;
     }
   }
 
@@ -84,8 +98,10 @@ class Ship extends PhysicsObject {
       case Keys.W: this.thrust = 0; break;
       case Keys.A: this.turn = 0; break;
       case Keys.D: this.turn = 0; break;
-      case Keys.SHIFT: this.stabilising = false; break;
-      case Keys.SPACE: this.firing = false; break;
     }
+  }
+
+  updateMouseState(event) {
+    this.firing = (event.buttons & MouseButtons.LEFT);
   }
 }

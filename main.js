@@ -8,7 +8,7 @@ var earth = new PhysicsObject(
 earth.angularVelocity = 0.05;
 universe.add(earth);
 var ship = new Ship(
-    new Vector(Config.EARTH_RADIUS + Config.STARTING_ALTITUDE, 0));
+    new Vector(Config.EARTH_RADIUS + 2 * Config.STARTING_ALTITUDE, 0));
 universe.add(ship);
 var enemy = new Enemy(
     new Vector(-Config.EARTH_RADIUS - Config.STARTING_ALTITUDE, 0),
@@ -18,7 +18,7 @@ universe.add(enemy);
 // Compute the velocity required for the ship to be in a (roughly) circular
 // orbit.
 var a = Universe.gravity(earth, ship).len() / ship.mass;
-ship.velocity.y = -Math.sqrt(ship.position.x * a);
+ship.velocity.y = Math.sqrt(ship.position.x * a);
 ship.angularVelocity = ship.velocity.y / ship.position.x;
 
 var a = Universe.gravity(earth, enemy).len() / enemy.mass;

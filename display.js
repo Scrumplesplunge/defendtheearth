@@ -12,6 +12,7 @@ class Display {
     window.addEventListener("mousemove", event => this.handleMouseMove(event));
     window.addEventListener("mouseup", event => this.updateMouseDown(event));
     window.addEventListener("wheel", event => this.handleMouseWheel(event));
+    window.addEventListener("contextmenu", event => event.preventDefault());
   }
 
   clear() {
@@ -48,8 +49,8 @@ class Display {
   }
 
   updateMouseDown(event) {
-    var leftButtonDown = ((event.buttons & MouseButtons.left) != 0);
-    this.mouseDown = leftButtonDown;
+    event.preventDefault();
+    this.mouseDown = ((event.buttons & MouseButtons.RIGHT) != 0);
   }
 
   handleMouseMove(event) {

@@ -1,10 +1,11 @@
 var MouseButtons = {
-  left: 1,
-  right: 2,
+  LEFT: 1,
+  RIGHT: 2,
 };
 
 var Keys = {
   SHIFT: 16,
+  CONTROL: 17,
   SPACE: 32,
   A: 65,
   D: 68,
