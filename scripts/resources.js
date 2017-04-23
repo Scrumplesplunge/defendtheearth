@@ -71,4 +71,5 @@ var sounds = {
   gameOver: sound("sounds/game_over.mp3"),
   poof: sound("sounds/poof.mp3"),
   rocketLoop: sound("sounds/rocket_loop.mp3"),
+  thrusterLoop: sound("sounds/thruster_loop.mp3"),
 };

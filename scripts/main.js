@@ -82,7 +82,8 @@ function showStats(ctx) {
 
 function showControls(ctx) {
   var controls = [
-    ["THRUST", "W"],
+    ["THRUST", "W+S"],
+    ["STRAFE", "A+D"],
     ["AIM", "MOUSE"],
     ["FIRE", "LEFT MOUSE"],
     ["ZOOM", "SCROLL"],

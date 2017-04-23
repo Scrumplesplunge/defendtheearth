@@ -109,6 +109,7 @@ class PhysicsObject extends EventManager {
   applyAngularImpulse(s) { this.angularVelocity += s / this.inertia; }
 
   forward() { return Vector.fromAngle(this.angle); }
+  left() { return this.forward().rotate90(); }
 
   toLocal(v) { return v.sub(this.position).rotate(-this.angle); }
   fromLocal(v) { return v.rotate(this.angle).add(this.position); }

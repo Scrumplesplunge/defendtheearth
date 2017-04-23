@@ -3,12 +3,6 @@ var rightGunOffset = new Vector(8, 2.5);
 var leftEngineOffset = new Vector(-6, -2.5);
 var rightEngineOffset = new Vector(-6, 2.5);
 
-var RotationMode = {
-  MOUSE: 0,
-  FREE: 1,
-  STABLE: 2,
-};
-
 class Ship extends PhysicsObject {
   constructor(position) {
     super(images.ship, position, 10, 1e3);
@@ -16,11 +10,11 @@ class Ship extends PhysicsObject {
     this.destructable = true;
     this.health = Config.SHIP_HEALTH;
     this.thrust = 0;
-    this.turn = 0;
+    this.strafe = 0;
     this.firing = false;
-    this.rotationMode = RotationMode.MOUSE;
     this.bulletDelay = 0;
     this.engineSound = sounds.rocketLoop.create();
+    this.thrusterSound = sounds.thrusterLoop.create();
 
     window.addEventListener("keydown", event => this.handleKeyDown(event));
     window.addEventListener("keyup", event => this.handleKeyUp(event));
@@ -57,26 +51,13 @@ class Ship extends PhysicsObject {
     super.update(dt);
 
     // Handle movement controls.
-    this.applyImpulse(
-        this.forward().mul(Config.SHIP_FORCE * this.thrust * dt));
+    var thrust = this.forward().mul(Config.SHIP_THRUST * this.thrust);
+    var strafe = this.left().mul(Config.SHIP_STRAFE * this.strafe);
+    this.applyImpulse(thrust.add(strafe).mul(dt));
 
-    switch (this.rotationMode) {
-      case RotationMode.MOUSE:
-        // Ship will always face the mouse.
-        var mousePosition = display.fromScreen(display.mousePosition);
-        this.angle = mousePosition.sub(this.position).toAngle();
-        break;
-      case RotationMode.STABLE:
-        // Rotation controls will affect angular velocity directly.
-        var damping = Math.pow(Config.DAMPING_RATE, Config.UPDATE_DELTA);
-        var target = Config.ROTATE_SPEED * this.turn;
-        this.angularVelocity = damping * this.angularVelocity + target;
-        break;
-      case RotationMode.FREE:
-        // Rotation controls will affect angular acceleration.
-        this.applyAngularImpulse(Config.SHIP_TORQUE * this.turn * dt);
-        break;
-    }
+    // Ship will always face the mouse.
+    var mousePosition = display.fromScreen(display.mousePosition);
+    this.angle = mousePosition.sub(this.position).toAngle();
 
     // Handle gunfire.
     if (this.firing) {
@@ -97,16 +78,18 @@ class Ship extends PhysicsObject {
   handleKeyDown(event) {
     switch (event.keyCode) {
       case Keys.W: this.thrust = 1; this.engineSound.play(); break;
-      case Keys.A: this.turn = -1; break;
-      case Keys.D: this.turn = 1; break;
+      case Keys.S: this.thrust = -1; this.thrusterSound.play(); break;
+      case Keys.A: this.strafe = -1; this.thrusterSound.play(); break;
+      case Keys.D: this.strafe = 1; this.thrusterSound.play(); break;
     }
   }
 
   handleKeyUp(event) {
     switch (event.keyCode) {
       case Keys.W: this.thrust = 0; this.engineSound.pause(); break;
-      case Keys.A: this.turn = 0; break;
-      case Keys.D: this.turn = 0; break;
+      case Keys.S: this.thrust = 0; this.thrusterSound.pause(); break;
+      case Keys.A: this.strafe = 0; this.thrusterSound.pause(); break;
+      case Keys.D: this.strafe = 0; this.thrusterSound.pause(); break;
     }
   }
 
