@@ -137,7 +137,8 @@ class Enemy extends PhysicsObject {
   fire() {
     sounds.enemyBullet.play();
     var direction = Vector.fromAngle(this.firingAngle);
-    Bullet.fire(this, this.position.add(direction.mul(this.radius)),
+    Bullet.fire(this, Config.ENEMY_BULLET_DAMAGE,
+                this.position.add(direction.mul(this.radius)),
                 direction, Config.ENEMY_BULLET_SPRAY);
   }
 

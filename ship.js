@@ -84,8 +84,10 @@ class Ship extends PhysicsObject {
         sounds.bullet.play();
         var leftGun = this.fromLocal(leftGunOffset);
         var rightGun = this.fromLocal(rightGunOffset);
-        Bullet.fire(this, rightGun, this.forward(), Config.SHIP_BULLET_SPRAY);
-        Bullet.fire(this, leftGun, this.forward(), Config.SHIP_BULLET_SPRAY);
+        Bullet.fire(this, Config.SHIP_BULLET_DAMAGE, rightGun, this.forward(),
+                    Config.SHIP_BULLET_SPRAY);
+        Bullet.fire(this, Config.SHIP_BULLET_DAMAGE, leftGun, this.forward(),
+                    Config.SHIP_BULLET_SPRAY);
         this.bulletDelay += 1 / Config.SHIP_FIRING_RATE;
       }
     }

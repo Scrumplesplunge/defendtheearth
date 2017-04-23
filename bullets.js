@@ -2,8 +2,9 @@ var bullets = [];
 var oldestBullet = 0;
 
 class Bullet extends PhysicsObject {
-  constructor(owner, position, velocity) {
+  constructor(owner, damage, position, velocity) {
     super(images.bullet, position, 5, 0.3);
+    this.damage = damage;
     this.owner = owner;
     this.velocity = velocity;
     this.angle = velocity.toAngle();
@@ -12,11 +13,11 @@ class Bullet extends PhysicsObject {
     this.on("collision", event => this.handleHit(event));
   }
   
-  static fire(owner, position, direction, aimNoise) {
+  static fire(owner, damage, position, direction, aimNoise) {
     // Create a new bullet.
     var aimDirection = direction.rotate(random(-aimNoise, aimNoise));
     var velocity = owner.velocity.add(aimDirection.mul(Config.BULLET_SPEED));
-    var bullet = new Bullet(owner, position, velocity);
+    var bullet = new Bullet(owner, damage, position, velocity);
 
     universe.add(bullet);
     if (bullets.length < Config.MAX_BULLETS) {
@@ -40,7 +41,7 @@ class Bullet extends PhysicsObject {
   handleHit(event) {
     if (event.object == this.owner) return;
     if (!event.object.hittable) return;
-    event.object.damage(Config.BULLET_DAMAGE);
+    event.object.damage(this.damage);
     this.remove();
   }
 }
