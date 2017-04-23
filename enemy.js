@@ -45,10 +45,32 @@ class Enemy extends PhysicsObject {
   }
 
   update(dt) {
+    // Attack the highest priority target that is within attack range.
+    var target = this.firstTargetInRange();
+    if (target == null) {
+      if (this.firing) sounds.enemyDeactivate.play();
+      this.firing = false;
+    } else {
+      if (!this.firing) sounds.enemyActivate.play();
+      this.firing = true;
+      this.firingAngle = target.position.sub(this.position).toAngle();
+    }
+
+    // If we are within range, orbit the target.
+    if (target != null) {
+      var gravityAccel = Universe.gravity(target, this).len() / this.mass;
+      var offset = target.position.sub(this.position);
+      var targetVelocity = Math.sqrt(offset.len() * gravityAccel);
+      this.velocity
+    }
+
+    this.handleSpooling(dt);
+  }
+
+  firstTargetInRange() {
     var target = null;
-    var targetOffset = new Vector(1, 0);
     for (var i = 0, n = this.targets.length; i < n; i++) {
-      targetOffset = this.targets[i].position.sub(this.position);
+      var targetOffset = this.targets[i].position.sub(this.position);
       if (targetOffset.len() > this.attackRange) continue;
       var result = this.universe.cast(this.position, targetOffset,
                                       object => object.hittable);
@@ -57,12 +79,23 @@ class Enemy extends PhysicsObject {
         break;
       }
     }
-    var firing = (target != null);
-    if (!this.firing && firing) sounds.enemyActivate.play();
-    if (this.firing && !firing) sounds.enemyDeactivate.play();
-    this.firing = firing;
-    this.firingAngle = targetOffset.toAngle();
+    return target;
+  }
 
+  closestTarget() {
+    var bestDistance = Infinity;
+    var target = null;
+    for (var i = 0, n = this.targets.length; i < n; i++) {
+      var distance = this.targets.position.sub(this.position).len();
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        target = this.targets[0];
+      }
+    }
+    return target;
+  }
+
+  handleSpooling(dt) {
     // Update the angular velocity.
     var targetAngularVelocity;
     if (this.firing) {
