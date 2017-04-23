@@ -14,7 +14,11 @@ class Ship extends PhysicsObject {
     this.firing = false;
     this.bulletDelay = 0;
     this.engineSound = sounds.rocketLoop.create();
+    this.engineSound.loop = true;
     this.thrusterSound = sounds.thrusterLoop.create();
+    this.thrusterSound.loop = true;
+    this.strafeSound = sounds.thrusterLoop.create();
+    this.strafeSound.loop = true;
 
     window.addEventListener("keydown", event => this.handleKeyDown(event));
     window.addEventListener("keyup", event => this.handleKeyUp(event));
@@ -79,8 +83,8 @@ class Ship extends PhysicsObject {
     switch (event.keyCode) {
       case Keys.W: this.thrust = 1; this.engineSound.play(); break;
       case Keys.S: this.thrust = -1; this.thrusterSound.play(); break;
-      case Keys.A: this.strafe = -1; this.thrusterSound.play(); break;
-      case Keys.D: this.strafe = 1; this.thrusterSound.play(); break;
+      case Keys.A: this.strafe = -1; this.strafeSound.play(); break;
+      case Keys.D: this.strafe = 1; this.strafeSound.play(); break;
     }
   }
 
@@ -88,8 +92,8 @@ class Ship extends PhysicsObject {
     switch (event.keyCode) {
       case Keys.W: this.thrust = 0; this.engineSound.pause(); break;
       case Keys.S: this.thrust = 0; this.thrusterSound.pause(); break;
-      case Keys.A: this.strafe = 0; this.thrusterSound.pause(); break;
-      case Keys.D: this.strafe = 0; this.thrusterSound.pause(); break;
+      case Keys.A: this.strafe = 0; this.strafeSound.pause(); break;
+      case Keys.D: this.strafe = 0; this.strafeSound.pause(); break;
     }
   }
 
