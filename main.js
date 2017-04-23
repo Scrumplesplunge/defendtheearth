@@ -12,6 +12,8 @@ var ship = new Ship(
 universe.add(ship);
 
 // Initialize enemies.
+var enemiesKilled = 0;
+
 function addEnemy(config) {
   var startingDirection = Vector.fromAngle(random(-Math.PI, Math.PI));
   var startingOffset = startingDirection.mul(
@@ -19,9 +21,31 @@ function addEnemy(config) {
   var startingPosition = earth.position.add(startingOffset);
   var enemy = new Enemy(startingPosition, config);
   universe.add(enemy);
+  return enemy;
 }
-for (var i = 0; i < 5; i++)
-  addEnemy(new EnemyOptions().setSize(15));
+
+var wave = 0;
+function enemiesInWave(wave) {
+  return clamp(3 + wave, 5, 10);
+}
+function enemyOptionForWave(wave) {
+  var size = 10 + random(0, 5 * wave);
+  return new EnemyOptions().setSize(size).setHealth(6 * size);
+}
+function nextWave() {
+  wave++;
+  var n = enemiesInWave(wave);
+  for (var i = 0; i < n; i++) {
+    var enemy = addEnemy(enemyOptionForWave(wave));
+    enemy.on("destroyed", function() {
+      enemiesKilled++;
+      // When the enemy is killed, move towards the next wave.
+      n--;
+      if (n == 0) nextWave();
+    });
+  }
+}
+nextWave();
 
 // Compute the velocity required for the ship to be in a (roughly) circular
 // orbit.
@@ -37,18 +61,42 @@ function resizeCanvas() {
   draw();
 }
 
-function info(ctx, object) {
+function showStats(ctx) {
   ctx.save();
     font.color = "#ffffff";
-    var message = object.name.toUpperCase() + ": ";
-    font.draw(ctx, message);
-    ctx.translate(font.measure(message), 0);
-    if (object.health <= 0) {
-      font.color = "#ff0000";
-      font.draw(ctx, "DESTROYED");
-    } else {
-      font.color = "#00ff00";
-      font.draw(ctx, Math.ceil(object.health).toString());
+    ctx.save();
+      font.color = "#ffffff";
+      ctx.translate(font.drawAndMeasure(ctx, "ENEMIES KILLED: "), 0);
+      font.color = "#ffff00";
+      font.draw(ctx, enemiesKilled.toString());
+    ctx.restore();
+    ctx.translate(0, 1);
+    ctx.save();
+      font.color = "#ffffff";
+      ctx.translate(font.drawAndMeasure(ctx, "WAVE: "), 0);
+      font.color = "#ffff00";
+      font.draw(ctx, wave.toString());
+    ctx.restore();
+  ctx.restore();
+}
+
+function showControls(ctx) {
+  var controls = [
+    ["THRUST", "W"],
+    ["AIM", "MOUSE"],
+    ["FIRE", "LEFT MOUSE"],
+    ["ZOOM", "SCROLL"],
+    ["LOOK", "RIGHT MOUSE"],
+  ];
+  ctx.save();
+    for (var i = 0, n = controls.length; i < n; i++) {
+      ctx.save();
+        font.color = "#ffffff";
+        ctx.translate(font.drawAndMeasure(ctx, controls[i][0] + ": "), 0);
+        font.color = "#ffff00";
+        font.draw(ctx, controls[i][1]);
+      ctx.restore();
+      ctx.translate(0, -1);
     }
   ctx.restore();
 }
@@ -64,6 +112,8 @@ function draw() {
     earth.showInfo(ctx, font);
     ctx.translate(0, 1);
     ship.showInfo(ctx, font);
+    ctx.translate(0, 1);
+    showStats(ctx);
   ctx.restore();
   ctx.save();
     ctx.translate(display.canvas.width - 20, 20);
@@ -75,6 +125,11 @@ function draw() {
     ctx.translate(-font.measure(message), 0);
     font.color = "#ffffff";
     font.draw(ctx, message);
+  ctx.restore();
+  ctx.save();
+    ctx.translate(20, display.canvas.height - 40);
+    ctx.scale(20, 20);
+    showControls(ctx);
   ctx.restore();
 }
 
