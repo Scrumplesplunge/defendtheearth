@@ -4,7 +4,7 @@ function image(src) {
   return out;
 }
 
-class Sound{
+class Sound {
   constructor(file) {
     this.file = file;
     this.instances = [];
@@ -23,6 +23,14 @@ class Sound{
       console.log("Too many instances of " + this.file);
     }
   }
+
+  repeat() {
+    var a = new Audio(this.file);
+    a.loop = true;
+    return a.play();
+  }
+
+  create() { return new Audio(this.file) }
 }
 
 function sound(src) { return new Sound(src); }
@@ -44,6 +52,12 @@ var images = {
 };
 
 var sounds = {
+  background: sound("background.ogg"),
   bullet: sound("bullet.mp3"),
+  enemyActivate: sound("enemy_activate.mp3"),
+  enemyDeactivate: sound("enemy_deactivate.mp3"),
+  enemyBullet: sound("enemy_bullet.mp3"),
   explode: sound("explode.mp3"),
+  poof: sound("poof.mp3"),
+  rocketLoop: sound("rocket_loop.mp3"),
 };

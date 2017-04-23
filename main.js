@@ -13,7 +13,7 @@ var ship = new Ship(
 universe.add(ship);
 var enemy = new Enemy(
     new Vector(-Config.EARTH_RADIUS - Config.STARTING_ALTITUDE, 0),
-    new EnemyOptions());
+    new EnemyOptions().setSize(15));
 universe.add(enemy);
 
 // Compute the velocity required for the ship to be in a (roughly) circular
@@ -66,6 +66,8 @@ function main() {
   canvas = document.getElementById("screen");
   display = new Display(canvas);
   display.target = ship;
+
+  sounds.background.repeat();
 
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);

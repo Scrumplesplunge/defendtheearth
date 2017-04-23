@@ -17,6 +17,7 @@ class Ship extends PhysicsObject {
     this.firing = false;
     this.rotationMode = RotationMode.MOUSE;
     this.bulletDelay = 0;
+    this.engineSound = sounds.rocketLoop.create();
 
     window.addEventListener("keydown", event => this.handleKeyDown(event));
     window.addEventListener("keyup", event => this.handleKeyUp(event));
@@ -76,6 +77,7 @@ class Ship extends PhysicsObject {
     if (this.firing) {
       this.bulletDelay -= dt;
       if (this.bulletDelay <= 0) {
+        sounds.bullet.play();
         var leftGun = this.fromLocal(leftGunOffset);
         var rightGun = this.fromLocal(rightGunOffset);
         Bullet.fire(this, rightGun, this.forward(), Config.SHIP_BULLET_SPRAY);
@@ -87,7 +89,7 @@ class Ship extends PhysicsObject {
 
   handleKeyDown(event) {
     switch (event.keyCode) {
-      case Keys.W: this.thrust = 1; break;
+      case Keys.W: this.thrust = 1; this.engineSound.play(); break;
       case Keys.A: this.turn = -1; break;
       case Keys.D: this.turn = 1; break;
     }
@@ -95,7 +97,7 @@ class Ship extends PhysicsObject {
 
   handleKeyUp(event) {
     switch (event.keyCode) {
-      case Keys.W: this.thrust = 0; break;
+      case Keys.W: this.thrust = 0; this.engineSound.pause(); break;
       case Keys.A: this.turn = 0; break;
       case Keys.D: this.turn = 0; break;
     }

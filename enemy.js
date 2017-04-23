@@ -22,6 +22,8 @@ class Wreckage extends PhysicsObject {
     super(images.wreckage.randomEntry(), position, radius, mass);
     this.destructable = true;
     this.health = 20;
+
+    this.on("destroyed", event => sounds.poof.play());
   }
 }
 
@@ -54,7 +56,10 @@ class Enemy extends PhysicsObject {
         break;
       }
     }
-    this.firing = (target != null);
+    var firing = (target != null);
+    if (!this.firing && firing) sounds.enemyActivate.play();
+    if (this.firing && !firing) sounds.enemyDeactivate.play();
+    this.firing = firing;
     this.firingAngle = targetOffset.toAngle();
 
     // Update the angular velocity.
@@ -79,11 +84,14 @@ class Enemy extends PhysicsObject {
     super.update(dt)
     var after = phase();
     
-    if (before != after && this.firing) {
-      var direction = Vector.fromAngle(this.firingAngle);
-      Bullet.fire(this, this.position.add(direction.mul(this.radius)),
-                  direction, Config.ENEMY_BULLET_SPRAY);
-    }
+    if (before != after && this.firing) this.fire();
+  }
+
+  fire() {
+    sounds.enemyBullet.play();
+    var direction = Vector.fromAngle(this.firingAngle);
+    Bullet.fire(this, this.position.add(direction.mul(this.radius)),
+                direction, Config.ENEMY_BULLET_SPRAY);
   }
 
   handleDestroyed(event) {
