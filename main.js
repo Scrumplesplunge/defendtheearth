@@ -41,7 +41,17 @@ function draw() {
   ctx.save();
     ctx.translate(50, 50);
     ctx.scale(20, 20);
-    font.draw(ctx, "THIS IS SOME TEXT!");
+    var message = "ENEMY HEALTH: ";
+    var width = font.measure(message);
+    font.color = "#ffffff";
+    font.draw(ctx, message);
+    ctx.translate(width, 0);
+    if (enemy.health > 0) {
+      font.draw(ctx, Math.ceil(enemy.health).toString());
+    } else {
+      font.color = "#ff0000";
+      font.draw(ctx, "DEAD");
+    }
   ctx.restore();
 }
 

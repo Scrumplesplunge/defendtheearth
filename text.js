@@ -49,32 +49,40 @@ class Font {
     this.image = image;
 
     this.initialized = false;
+    this.canvas = document.createElement("canvas");
+    this.context = this.canvas.getContext("2d");
     this.characters = {};
 
-    if (this.image.complete) {
-      this.initialize();
-    } else {
-      this.image.onload = () => this.initialize();
-    }
+    this.image.onload = () => this.initialize();
 
+    this.color = "#ffffff";
+    this.renderedColor = "";
     this.characterSpacing = 0.1;
     this.spaceWidth = 0.5;
   }
 
+  renderFont() {
+    this.context.save();
+      this.context.fillStyle = this.color;
+      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.globalCompositeOperation = "destination-in";
+      this.context.drawImage(this.image, 0, 0);
+    this.context.restore();
+    this.renderedColor = this.color;
+  }
+
   initialize() {
     this.initialized = true;
-    var canvas = document.createElement("canvas");
-    canvas.width = this.image.width;
-    canvas.height = this.image.height;
-    var context = canvas.getContext("2d");
-    context.drawImage(this.image, 0, 0);
+    this.canvas.width = this.image.width;
+    this.canvas.height = this.image.height;
+    this.renderFont();
 
     for (var i = 0, n = textGrid.length; i < n; i++) {
-      this.characters[textGrid[i]] = new Character(context, textGrid[i]);
+      this.characters[textGrid[i]] = new Character(this.context, textGrid[i]);
     }
   }
 
-  widthOf(character) {
+  widthOf(c) {
     if (!this.initialized) return 1;
     return c == " " ? this.spaceWidth : this.characters[c].aspect;
   }
@@ -89,6 +97,7 @@ class Font {
 
   draw(ctx, message) {
     if (!this.initialized) return;
+    if (this.renderedColor != this.color) this.renderFont();
     ctx.save();
       for (var i = 0, n = message.length; i < n; i++) {
         if (message[i] == " ") {
