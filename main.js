@@ -4,9 +4,7 @@ var font = new Font(images.text);
 
 // Initialize the universe.
 var universe = new Universe();
-var earth = new PhysicsObject(
-    images.earth, new Vector(0, 0), Config.EARTH_RADIUS, Config.EARTH_MASS);
-earth.angularVelocity = 0.05;
+var earth = new Earth(new Vector(0, 0));
 universe.add(earth);
 var ship = new Ship(
     new Vector(Config.EARTH_RADIUS + 2 * Config.STARTING_ALTITUDE, 0));
