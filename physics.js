@@ -23,6 +23,8 @@ class Vector {
     var c = Math.cos(theta), s = Math.sin(theta);
     return new Vector(c * this.x - s * this.y, s * this.x + c * this.y);
   }
+  
+  rotate90() { return new Vector(-this.y, this.x); }
 }
 
 class PhysicsObject extends EventManager {

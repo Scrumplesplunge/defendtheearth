@@ -8,10 +8,10 @@ var universe = new Universe();
 var earth = new Earth(new Vector(0, 0));
 universe.add(earth);
 var ship = new Ship(
-    new Vector(Config.EARTH_RADIUS + 2 * Config.STARTING_ALTITUDE, 0));
+    new Vector(Config.EARTH_RADIUS + Config.STARTING_ALTITUDE, 0));
 universe.add(ship);
 var enemy = new Enemy(
-    new Vector(-Config.EARTH_RADIUS - Config.STARTING_ALTITUDE, 0),
+    new Vector(-Config.EARTH_RADIUS - 10 * Config.STARTING_ALTITUDE, 0),
     new EnemyOptions().setSize(15));
 universe.add(enemy);
 
@@ -20,9 +20,6 @@ universe.add(enemy);
 var a = Universe.gravity(earth, ship).len() / ship.mass;
 ship.velocity.y = Math.sqrt(ship.position.x * a);
 ship.angularVelocity = ship.velocity.y / ship.position.x;
-
-var a = Universe.gravity(earth, enemy).len() / enemy.mass;
-enemy.velocity.y = Math.sqrt(ship.position.x * a);
 
 // When the size of the browser window changes, update the dimensions of the
 // canvas.

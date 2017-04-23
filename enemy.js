@@ -6,6 +6,7 @@ class EnemyOptions {
     this.firingRate = 20;
     this.attackRange = 500;
     this.targets = [ship, earth];
+    this.orbitAltitude = Config.STARTING_ALTITUDE * random(2, 5);
   }
 
   setSize(x) { this.size = x; return this; }
@@ -14,6 +15,7 @@ class EnemyOptions {
   setFiringRate(x) { this.firingRate = x; return this; }
   setAttackRange(x) { this.attackRange = x; return this; }
   setTargets(targets) { this.targets = x; return this; }
+  setOrbitAltitude(x) { this.orbitAltitude = x; return this; }
 }
 
 class Wreckage extends PhysicsObject {
@@ -40,6 +42,7 @@ class Enemy extends PhysicsObject {
     this.firingAngle = -Math.PI / 2;
     this.attackRange = options.attackRange;
     this.destructable = true;
+    this.orbitAltitude = options.orbitAltitude;
 
     this.on("destroyed", event => this.handleDestroyed(event));
   }
@@ -56,13 +59,21 @@ class Enemy extends PhysicsObject {
       this.firingAngle = target.position.sub(this.position).toAngle();
     }
 
-    // If we are within range, orbit the target.
-    if (target != null) {
-      var gravityAccel = Universe.gravity(target, this).len() / this.mass;
-      var offset = target.position.sub(this.position);
-      var targetVelocity = Math.sqrt(offset.len() * gravityAccel);
-      this.velocity
-    }
+    // Intended flight path is always to orbit the Earth.
+    var a = Universe.gravity(earth, this).len() / this.mass;
+    var offset = earth.position.sub(this.position);
+    var targetSpeed = Math.sqrt(offset.len() * a);
+    var orbitVelocity = offset.norm().rotate90().mul(targetSpeed);
+
+    // Try to stay close to the orbit altitude.
+    var approachSpeed = clamp(offset.len() - this.orbitAltitude,
+                              -Config.ENEMY_APPROACH_SPEED,
+                              Config.ENEMY_APPROACH_SPEED);
+    var approachVelocity = offset.norm().mul(approachSpeed);
+
+    var targetVelocity = orbitVelocity.add(approachVelocity);
+    var accel = targetVelocity.sub(this.velocity);
+    this.velocity = this.velocity.add(accel.mul(dt));
 
     this.handleSpooling(dt);
   }
