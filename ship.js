@@ -25,6 +25,8 @@ class Ship extends PhysicsObject {
     window.addEventListener("keyup", event => this.handleKeyUp(event));
     window.addEventListener("mousedown", event => this.updateMouseState(event));
     window.addEventListener("mouseup", event => this.updateMouseState(event));
+
+    this.on("destroyed", event => this.handleDestroyed(event));
   }
 
   draw(ctx) {
@@ -107,5 +109,10 @@ class Ship extends PhysicsObject {
 
   updateMouseState(event) {
     this.firing = (event.buttons & MouseButtons.LEFT);
+  }
+
+  handleDestroyed(event) {
+    sounds.explode.play();
+    setTimeout(() => sounds.gameOver.play(), 1000);
   }
 }

@@ -59,6 +59,7 @@ var sounds = {
   enemyDeactivate: sound("enemy_deactivate.mp3"),
   enemyBullet: sound("enemy_bullet.mp3"),
   explode: sound("explode.mp3"),
+  gameOver: sound("game_over.mp3"),
   poof: sound("poof.mp3"),
   rocketLoop: sound("rocket_loop.mp3"),
 };
