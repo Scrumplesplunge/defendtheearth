@@ -12,6 +12,8 @@ var RotationMode = {
 class Ship extends PhysicsObject {
   constructor(position) {
     super(images.ship, position, 10, 1e3);
+    this.name = "Player Ship";
+    this.destructable = true;
     this.thrust = 0;
     this.turn = 0;
     this.firing = false;

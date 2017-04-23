@@ -28,6 +28,7 @@ class Vector {
 class PhysicsObject extends EventManager {
   constructor(image, position, radius, mass) {
     super();
+    this.name = "Physics Object";
     this.image = image;
     this.position = position;
     this.angle = 0;

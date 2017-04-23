@@ -31,25 +31,35 @@ function resizeCanvas() {
   draw();
 }
 
+function info(ctx, object) {
+  ctx.save();
+    font.color = "#ffffff";
+    var message = object.name.toUpperCase() + ": ";
+    font.draw(ctx, message);
+    ctx.translate(font.measure(message), 0);
+    if (object.health <= 0) {
+      font.color = "#ff0000";
+      font.draw(ctx, "DESTROYED");
+    } else {
+      font.color = "#00ff00";
+      font.draw(ctx, Math.ceil(object.health).toString());
+    }
+  ctx.restore();
+}
+
 // Redraw the state of the world without modifying anything.
 function draw() {
   display.clear();
   display.draw(ctx => universe.draw(ctx));
   var ctx = display.context;
   ctx.save();
-    ctx.translate(50, 50);
+    ctx.translate(20, 20);
     ctx.scale(20, 20);
-    var message = "ENEMY HEALTH: ";
-    var width = font.measure(message);
-    font.color = "#ffffff";
-    font.draw(ctx, message);
-    ctx.translate(width, 0);
-    if (enemy.health > 0) {
-      font.draw(ctx, Math.ceil(enemy.health).toString());
-    } else {
-      font.color = "#ff0000";
-      font.draw(ctx, "DEAD");
-    }
+    info(ctx, earth);
+    ctx.translate(0, 1);
+    info(ctx, ship);
+    ctx.translate(0, 1);
+    info(ctx, enemy);
   ctx.restore();
 }
 
