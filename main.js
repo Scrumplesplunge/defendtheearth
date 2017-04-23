@@ -61,7 +61,7 @@ function draw() {
   ctx.save();
     ctx.translate(20, 20);
     ctx.scale(20, 20);
-    info(ctx, earth);
+    earth.showInfo(ctx, font);
     ctx.translate(0, 1);
     info(ctx, ship);
   ctx.restore();

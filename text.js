@@ -4,7 +4,7 @@ var textGrid =
     "QRSTUVWX" +
     "YZ.,:;!?" +
     "01234567" +
-    "89()<|";
+    "89()<|+-";
 
 class Character {
   constructor(font, c) {
@@ -107,14 +107,16 @@ class Font {
   }
 
   measure(message) {
+    message = message.toUpperCase();
     if (message.length == 0) return 0;
-    var length = this.widthOf(message[0]);
-    for (var i = 1, n = message.length; i < n; i++)
-      length += this.characterSpacing + this.widthOf(message[i]);
+    var length = 0;
+    for (var i = 0, n = message.length; i < n; i++)
+      length += this.widthOf(message[i]) + this.characterSpacing;
     return length;
   }
 
   draw(ctx, message) {
+    message = message.toUpperCase();
     if (!this.initialized) return;
     if (this.renderedColor != this.color) this.renderFont();
     ctx.save();
@@ -131,5 +133,10 @@ class Font {
         ctx.translate(character.aspect + this.characterSpacing, 0);
       }
     ctx.restore();
+  }
+
+  drawAndMeasure(ctx, message) {
+    this.draw(ctx, message);
+    return this.measure(message);
   }
 }
