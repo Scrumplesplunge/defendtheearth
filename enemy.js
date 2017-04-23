@@ -93,7 +93,8 @@ class Enemy extends PhysicsObject {
       var angle = 2 * Math.PI * i / 5;
       var offset = Vector.fromAngle(angle).mul(this.radius * 0.5);
       var wreckage = new Wreckage(this.position.add(offset), this.radius * 0.5);
-      wreckage.velocity = offset.mul(random(0, Config.MAX_EXPLOSION_SPEED));
+      var relativeVelocity = offset.mul(random(0, Config.MAX_EXPLOSION_SPEED));
+      wreckage.velocity = this.velocity.add(relativeVelocity);
       wreckage.angularVelocity =
           random(-Config.MAX_EXPLOSION_SPEED, Config.MAX_EXPLOSION_SPEED);
       this.universe.add(wreckage);
