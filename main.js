@@ -1,6 +1,7 @@
 var canvas;
 var display;
 var font = new Font(images.text);
+var soundtrack = sounds.background.repeat();
 
 // Initialize the universe.
 var universe = new Universe();
@@ -61,7 +62,27 @@ function draw() {
     ctx.translate(0, 1);
     info(ctx, enemy);
   ctx.restore();
+  ctx.save();
+    ctx.translate(display.canvas.width - 20, 20);
+    ctx.scale(20, 20);
+    ctx.translate(-1, 0);
+    font.color = soundtrack.paused ? "#ff0000" : "#00ff00";
+    font.draw(ctx, soundtrack.paused ? "|" : "<");
+    var message = "MUSIC (M): ";
+    ctx.translate(-font.measure(message), 0);
+    font.color = "#ffffff";
+    font.draw(ctx, message);
+  ctx.restore();
 }
+
+window.addEventListener("keydown", function(event) {
+  if (event.keyCode != Keys.M) return;
+  if (soundtrack.paused) {
+    soundtrack.play();
+  } else {
+    soundtrack.pause();
+  }
+});
 
 // Update the state of the world.
 function update() {
@@ -74,8 +95,6 @@ function main() {
   canvas = document.getElementById("screen");
   display = new Display(canvas);
   display.target = ship;
-
-  sounds.background.repeat();
 
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);

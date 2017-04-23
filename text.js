@@ -4,7 +4,7 @@ var textGrid =
     "QRSTUVWX" +
     "YZ.,:;!?" +
     "01234567" +
-    "89";
+    "89()<|";
 
 class Character {
   constructor(font, c) {
@@ -101,6 +101,8 @@ class Font {
 
   widthOf(c) {
     if (!this.initialized) return 1;
+    if (c != " " && !this.characters.hasOwnProperty(c))
+      throw Error("Character '" + c + "' is unavailable.");
     return c == " " ? this.spaceWidth : this.characters[c].aspect;
   }
 
@@ -121,9 +123,12 @@ class Font {
           ctx.translate(this.spaceWidth + this.characterSpacing, 0);
           continue;
         }
-        var c = this.characters[message[i]];
-        c.draw(ctx);
-        ctx.translate(c.aspect + this.characterSpacing, 0);
+        var c = message[i];
+        if (!this.characters.hasOwnProperty(c))
+          throw Error("Character '" + c + "' is unavailable.");
+        var character = this.characters[c];
+        character.draw(ctx);
+        ctx.translate(character.aspect + this.characterSpacing, 0);
       }
     ctx.restore();
   }

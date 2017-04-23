@@ -27,7 +27,8 @@ class Sound {
   repeat() {
     var a = new Audio(this.file);
     a.loop = true;
-    return a.play();
+    a.play();
+    return a;
   }
 
   create() { return new Audio(this.file) }
