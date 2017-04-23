@@ -4,7 +4,7 @@ class EnemyOptions {
     this.speed = 100;
     this.health = 100;
     this.firingRate = 20;
-    this.attackRange = 500;
+    this.attackRange = 750;
     this.targets = [ship, earth];
     this.orbitAltitude = Config.STARTING_ALTITUDE * random(2, 5);
   }
@@ -67,9 +67,9 @@ class Enemy extends PhysicsObject {
       var orbitVelocity = offset.norm().rotate90().mul(targetSpeed);
 
       // Try to stay close to the orbit altitude.
-      var approachSpeed = clamp(offset.len() - this.orbitAltitude,
-                                -Config.ENEMY_APPROACH_SPEED,
-                                Config.ENEMY_APPROACH_SPEED);
+      var approachSpeed = clamp(
+          offset.len() - this.orbitAltitude - Config.EARTH_RADIUS,
+          -Config.ENEMY_APPROACH_SPEED, Config.ENEMY_APPROACH_SPEED);
       var approachVelocity = offset.norm().mul(approachSpeed);
 
       var targetVelocity = orbitVelocity.add(approachVelocity);

@@ -14,7 +14,8 @@ universe.add(ship);
 // Initialize enemies.
 function addEnemy(config) {
   var startingDirection = Vector.fromAngle(random(-Math.PI, Math.PI));
-  var startingOffset = startingDirection.mul(Config.ENEMY_STARTING_ALTITUDE);
+  var startingOffset = startingDirection.mul(
+      Config.EARTH_RADIUS + Config.ENEMY_STARTING_ALTITUDE);
   var startingPosition = earth.position.add(startingOffset);
   var enemy = new Enemy(startingPosition, config);
   universe.add(enemy);
