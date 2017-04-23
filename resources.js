@@ -40,6 +40,12 @@ var images = {
   arrow: image("arrow.png"),
   bullet: image("bullet.png"),
   earth: image("earth.png"),
+  earthLump: [
+    image("earth_lump1.png"),
+    image("earth_lump2.png"),
+    image("earth_lump3.png"),
+    image("earth_lump4.png"),
+  ],
   enemy: image("enemy.png"),
   flame: image("flame.png"),
   ship: image("ship.png"),
@@ -56,6 +62,8 @@ var images = {
 var sounds = {
   background: sound("background.ogg"),
   bullet: sound("bullet.mp3"),
+  earthExplode: sound("earth_explode.mp3"),
+  earthGone: sound("earth_gone.mp3"),
   enemyActivate: sound("enemy_activate.mp3"),
   enemyDeactivate: sound("enemy_deactivate.mp3"),
   enemyBullet: sound("enemy_bullet.mp3"),

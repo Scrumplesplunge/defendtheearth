@@ -4,6 +4,17 @@ var RepairState = {
   REPAIRING: 2,
 };
 
+class EarthLump extends PhysicsObject {
+  constructor(position, radius) {
+    var mass = 40 * radius * radius;
+    super(images.earthLump.randomEntry(), position, radius, mass);
+    this.destructable = true;
+    this.health = 50;
+
+    this.on("destroyed", event => sounds.explode.play());
+  }
+}
+
 class Earth extends PhysicsObject {
   constructor(position) {
     super(images.earth, position, Config.EARTH_RADIUS, Config.EARTH_MASS);
@@ -14,6 +25,8 @@ class Earth extends PhysicsObject {
     this.health = Config.EARTH_HEALTH;
     this.repairState = RepairState.HEALTHY;
     this.rechargeDelay = 0;
+
+    this.on("destroyed", event => this.handleDestroyed(event));
   }
 
   update(dt) {
@@ -49,6 +62,24 @@ class Earth extends PhysicsObject {
       }
       font.draw(ctx, message);
     ctx.restore();
+  }
+
+  handleDestroyed(event) {
+    sounds.earthExplode.play();
+    setTimeout(() => sounds.earthGone.play(), 2000);
+
+    // Scatter some wreckage.
+    for (var i = 0; i < 50; i++) {
+      var angle = 2 * Math.PI * i / 5;
+      var size = this.radius * Math.pow(random(0.1, 0.4), 2);
+      var offset = Vector.fromAngle(angle).mul(size);
+      var lump = new EarthLump(this.position.add(offset), size);
+      var relativeVelocity = offset.mul(random(0, Config.MAX_EXPLOSION_SPEED));
+      lump.velocity = this.velocity.add(relativeVelocity);
+      lump.angularVelocity =
+          random(-Config.MAX_EXPLOSION_SPEED, Config.MAX_EXPLOSION_SPEED);
+      this.universe.add(lump);
+    }
   }
 
   damage(x) {
