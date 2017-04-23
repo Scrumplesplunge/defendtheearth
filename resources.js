@@ -37,6 +37,7 @@ class Sound {
 function sound(src) { return new Sound(src); }
 
 var images = {
+  arrow: image("arrow.png"),
   bullet: image("bullet.png"),
   earth: image("earth.png"),
   enemy: image("enemy.png"),

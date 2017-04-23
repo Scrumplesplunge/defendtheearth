@@ -34,6 +34,7 @@ class Enemy extends PhysicsObject {
     var radius = options.size, mass = 40 * options.size * options.size;
     super(images.enemy, position, radius, mass);
     this.name = "Enemy Ship";
+    this.indicated = true;
     this.speed = options.speed;
     this.health = options.health;
     this.targets = options.targets;

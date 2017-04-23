@@ -48,6 +48,12 @@ class Display {
     return v.sub(midpoint).div(this.scale).add(this.center);
   }
 
+  topLeft() { return this.fromScreen(new Vector(0, 0)); }
+
+  bottomRight() {
+    return this.fromScreen(new Vector(this.canvas.width, this.canvas.height));
+  }
+
   updateMouseDown(event) {
     event.preventDefault();
     this.mouseDown = ((event.buttons & MouseButtons.RIGHT) != 0);

@@ -41,6 +41,7 @@ class PhysicsObject extends EventManager {
     this.inertia = 0.5 * Math.PI * Math.pow(this.radius, 4);
     this.hittable = true;
     this.destructable = false;
+    this.indicated = false;
     this.health = 100;
 
     // This is set to null when the object has logically been removed from the
@@ -54,6 +55,37 @@ class PhysicsObject extends EventManager {
   draw(ctx) {
     var size = 2 * this.radius;
     drawSprite(ctx, this.image, this.position, this.angle, size, size);
+
+    var topLeft = display.topLeft();
+    var bottomRight = display.bottomRight();
+
+    if (this.indicated) {
+      if (this.position.x < topLeft.x ||
+          this.position.y < topLeft.y ||
+          bottomRight.x < this.position.x ||
+          bottomRight.y < this.position.y) {
+        // Compute the point around the perimeter of the screen which lies on
+        // the line between the center of the screen and the position of this
+        // object. This is where we want to put an indicator.
+        var center = display.center;
+        var cornerOffset = bottomRight.sub(center);
+        var direction = this.position.sub(center);
+
+        // Clip the direction to the screen.
+        if (Math.abs(direction.x) > cornerOffset.x) {
+          var target = cornerOffset.x - 50 / display.scale;
+          direction = direction.mul(target / Math.abs(direction.x));
+        }
+        if (Math.abs(direction.y) > cornerOffset.y) {
+          var target = cornerOffset.y - 50 / display.scale;
+          direction = direction.mul(target / Math.abs(direction.y));
+        }
+
+        var position = center.add(direction);
+        var s = 30 / display.scale;  // Counteract the camera scale.
+        drawSprite(ctx, images.arrow, position, direction.toAngle(), s, s);
+      }
+    }
   }
 
   update(dt) {
@@ -106,7 +138,10 @@ class Universe {
   add(object) { object.universe = this; this.objects.push(object); }
   remove(object) { object.universe = null; }
 
-  draw(ctx) { this.objects.forEach(object => object.draw(ctx)); }
+  draw(ctx) {
+    // Draw all objects.
+    this.objects.forEach(object => object.draw(ctx));
+  }
 
   update(dt) {
     // Update all objects, removing any which are no longer part of the

@@ -88,8 +88,9 @@ function showControls(ctx) {
     ["ZOOM", "SCROLL"],
     ["LOOK", "RIGHT MOUSE"],
   ];
+  controls.sort();
   ctx.save();
-    for (var i = 0, n = controls.length; i < n; i++) {
+    for (var i = controls.length - 1; i >= 0; i--) {
       ctx.save();
         font.color = "#ffffff";
         ctx.translate(font.drawAndMeasure(ctx, controls[i][0] + ": "), 0);
