@@ -14,6 +14,7 @@ class Ship extends PhysicsObject {
     super(images.ship, position, 10, 1e3);
     this.name = "Player Ship";
     this.destructable = true;
+    this.health = Config.SHIP_HEALTH;
     this.thrust = 0;
     this.turn = 0;
     this.firing = false;
@@ -116,5 +117,24 @@ class Ship extends PhysicsObject {
   handleDestroyed(event) {
     sounds.explode.play();
     setTimeout(() => sounds.gameOver.play(), 1000);
+  }
+
+  showInfo(ctx, font) {
+    ctx.save();
+      font.color = "#ffffff";
+      ctx.translate(font.drawAndMeasure(ctx, this.name + ": "), 0);
+      var message = Math.ceil(this.health) + " HP";
+      if (this.health <= 0) {
+        font.color = "#ff0000";
+        message = "DESTROYED";
+      } else if (this.health < 0.2 * Config.SHIP_HEALTH) {
+        font.color = "#ff0000";
+      } else if (this.health < 0.5 * Config.SHIP_HEALTH) {
+        font.color = "#ffff00";
+      } else {
+        font.color = "#ffffff";
+      }
+      font.draw(ctx, message);
+    ctx.restore();
   }
 }
