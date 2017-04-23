@@ -7,20 +7,20 @@ var textGrid =
     "89";
 
 class Character {
-  constructor(textContext, c) {
-    this.image = textContext.canvas;
+  constructor(font, c) {
+    this.font = font;
     this.cell = textGrid.indexOf(c.toUpperCase());
     if (this.cell < 0) throw Error("Character '" + c + "' is unavailable.");
     var gridX = this.cell % 8;
     var gridY = Math.floor(this.cell / 8);
-    var cellWidth = this.image.width / 8;
-    var cellHeight = this.image.height / 8;
+    var cellWidth = font.image.width / 8;
+    var cellHeight = font.image.height / 8;
     var cellX = gridX * cellWidth;
     var cellY = gridY * cellHeight;
 
     // Examine the character and restrict it to the narrowest box that contains
     // it.
-    var cell = textContext.getImageData(cellX, cellY, cellWidth, cellHeight);
+    var cell = font.context.getImageData(cellX, cellY, cellWidth, cellHeight);
     var minX = cell.width, maxX = 0;
     for (var y = 0, yLimit = cell.height; y < yLimit; y++) {
       for (var x = 0, xLimit = cell.width; x < xLimit; x++) {
@@ -39,7 +39,7 @@ class Character {
   }
 
   draw(ctx) {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height,
+    ctx.drawImage(this.font.canvas, this.x, this.y, this.width, this.height,
                   0, 0, this.aspect, 1);
   }
 }
@@ -49,37 +49,54 @@ class Font {
     this.image = image;
 
     this.initialized = false;
-    this.canvas = document.createElement("canvas");
-    this.context = this.canvas.getContext("2d");
+    this.renderedColors = {};
     this.characters = {};
 
     this.image.onload = () => this.initialize();
 
     this.color = "#ffffff";
-    this.renderedColor = "";
+    this.renderedColor = "";  // The color currently set in the active context.
     this.characterSpacing = 0.1;
     this.spaceWidth = 0.5;
   }
 
   renderFont() {
-    this.context.save();
-      this.context.fillStyle = this.color;
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.context.globalCompositeOperation = "destination-in";
-      this.context.drawImage(this.image, 0, 0);
-    this.context.restore();
+    if (this.color == this.renderedColor) return;
     this.renderedColor = this.color;
+    if (this.renderedColors.hasOwnProperty(this.color)) {
+      // If the color has previously been rendered, there is no need to render
+      // it again.
+      var r = this.renderedColors[this.color];
+      this.canvas = r.canvas;
+      this.context = r.context;
+      return;
+    }
+
+    console.log("Rendering font " + this.image.src + " in color " + this.color);
+
+    this.canvas = document.createElement("canvas");
+    this.canvas.width = this.image.width;
+    this.canvas.height = this.image.height;
+    this.context = this.canvas.getContext("2d");
+
+    this.context.fillStyle = this.color;
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.globalCompositeOperation = "destination-in";
+    this.context.drawImage(this.image, 0, 0);
+
+    this.renderedColors[this.color] = {
+      canvas: this.canvas,
+      context: this.context,
+    };
   }
 
   initialize() {
-    this.initialized = true;
-    this.canvas.width = this.image.width;
-    this.canvas.height = this.image.height;
     this.renderFont();
-
     for (var i = 0, n = textGrid.length; i < n; i++) {
-      this.characters[textGrid[i]] = new Character(this.context, textGrid[i]);
+      this.characters[textGrid[i]] = new Character(this, textGrid[i]);
     }
+
+    this.initialized = true;
   }
 
   widthOf(c) {
