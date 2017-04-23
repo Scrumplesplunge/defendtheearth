@@ -1,5 +1,6 @@
 var canvas;
 var display;
+var font = new Font(images.text);
 
 // Initialize the universe.
 var universe = new Universe();
@@ -36,6 +37,12 @@ function resizeCanvas() {
 function draw() {
   display.clear();
   display.draw(ctx => universe.draw(ctx));
+  var ctx = display.context;
+  ctx.save();
+    ctx.translate(50, 50);
+    ctx.scale(20, 20);
+    font.draw(ctx, "THIS IS SOME TEXT!");
+  ctx.restore();
 }
 
 // Update the state of the world.

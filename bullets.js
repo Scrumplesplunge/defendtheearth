@@ -13,6 +13,8 @@ class Bullet extends PhysicsObject {
   }
   
   static fire(owner, position, direction, aimNoise) {
+    sounds.bullet.play();
+
     // Create a new bullet.
     var aimDirection = direction.rotate(random(-aimNoise, aimNoise));
     var velocity = owner.velocity.add(aimDirection.mul(Config.BULLET_SPEED));

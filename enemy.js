@@ -87,6 +87,8 @@ class Enemy extends PhysicsObject {
   }
 
   handleDestroyed(event) {
+    sounds.explode.play();
+
     for (var i = 0; i < 5; i++) {
       var angle = 2 * Math.PI * i / 5;
       var offset = Vector.fromAngle(angle).mul(this.radius * 0.5);

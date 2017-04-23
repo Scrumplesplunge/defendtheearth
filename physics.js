@@ -60,6 +60,7 @@ class PhysicsObject extends EventManager {
 
   damage(x) {
     if (!this.destructable) return;
+    if (this.health <= 0) return;
     this.health -= x;
     if (this.health <= 0) {
       this.trigger({type: "destroyed"});
