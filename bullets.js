@@ -40,6 +40,7 @@ class Bullet extends PhysicsObject {
   handleHit(event) {
     if (event.object == this.owner) return;
     if (!event.object.hittable) return;
+    event.object.damage(Config.BULLET_DAMAGE);
     this.remove();
   }
 }

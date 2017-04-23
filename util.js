@@ -16,6 +16,11 @@ var Keys = {
 // Return a random value in the range [a, b).
 function random(a, b) { return a + Math.random() * (b - a); }
 
+// Return a random entry from an array.
+Array.prototype.randomEntry = function() {
+  return this[Math.floor(Math.random() * this.length)];
+};
+
 // Return the value of a clamped to the range [b, c].
 function clamp(a, b, c) {
   return Math.min(Math.max(a, b), c);

@@ -37,6 +37,8 @@ class PhysicsObject extends EventManager {
     this.mass = mass;
     this.inertia = 0.5 * Math.PI * Math.pow(this.radius, 4);
     this.hittable = true;
+    this.destructable = false;
+    this.health = 100;
 
     // This is set to null when the object has logically been removed from the
     // universe. This may happen before the object has physically been removed
@@ -54,6 +56,15 @@ class PhysicsObject extends EventManager {
   update(dt) {
     this.position = this.position.add(this.velocity.mul(dt));
     this.angle = (this.angle + this.angularVelocity * dt) % (2 * Math.PI);
+  }
+
+  damage(x) {
+    if (!this.destructable) return;
+    this.health -= x;
+    if (this.health <= 0) {
+      this.trigger({type: "destroyed"});
+      this.remove();
+    }
   }
 
   remove() { if (this.universe != null) this.universe.remove(this); }

@@ -16,6 +16,15 @@ class EnemyOptions {
   setTargets(targets) { this.targets = x; return this; }
 }
 
+class Wreckage extends PhysicsObject {
+  constructor(position, radius) {
+    var mass = 40 * radius * radius;
+    super(images.wreckage.randomEntry(), position, radius, mass);
+    this.destructable = true;
+    this.health = 20;
+  }
+}
+
 class Enemy extends PhysicsObject {
   constructor(position, options) {
     var radius = options.size, mass = 40 * options.size * options.size;
@@ -27,6 +36,9 @@ class Enemy extends PhysicsObject {
     this.firingRate = options.firingRate;
     this.firingAngle = -Math.PI / 2;
     this.attackRange = options.attackRange;
+    this.destructable = true;
+
+    this.on("destroyed", event => this.handleDestroyed(event));
   }
 
   update(dt) {
@@ -36,7 +48,7 @@ class Enemy extends PhysicsObject {
       targetOffset = this.targets[i].position.sub(this.position);
       if (targetOffset.len() > this.attackRange) continue;
       var result = this.universe.cast(this.position, targetOffset,
-                                      object => !(object instanceof Bullet));
+                                      object => object.hittable);
       if (result.object == this.targets[i]) {
         target = this.targets[i];
         break;
@@ -71,6 +83,18 @@ class Enemy extends PhysicsObject {
       var direction = Vector.fromAngle(this.firingAngle);
       Bullet.fire(this, this.position.add(direction.mul(this.radius)),
                   direction, Config.ENEMY_BULLET_SPRAY);
+    }
+  }
+
+  handleDestroyed(event) {
+    for (var i = 0; i < 5; i++) {
+      var angle = 2 * Math.PI * i / 5;
+      var offset = Vector.fromAngle(angle).mul(this.radius * 0.5);
+      var wreckage = new Wreckage(this.position.add(offset), this.radius * 0.5);
+      wreckage.velocity = offset.mul(random(0, Config.MAX_EXPLOSION_SPEED));
+      wreckage.angularVelocity =
+          random(-Config.MAX_EXPLOSION_SPEED, Config.MAX_EXPLOSION_SPEED);
+      this.universe.add(wreckage);
     }
   }
 }

@@ -10,4 +10,11 @@ var images = {
   enemy: image("enemy.png"),
   flame: image("flame.png"),
   ship: image("ship.png"),
+  wreckage: [
+    image("wreckage1.png"),
+    image("wreckage2.png"),
+    image("wreckage3.png"),
+    image("wreckage4.png"),
+    image("wreckage5.png"),
+  ],
 };
